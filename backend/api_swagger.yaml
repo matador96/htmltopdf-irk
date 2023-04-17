@@ -1,0 +1,256 @@
+openapi: 3.0.3
+info:
+  title: Swagger Rocketeers - OpenAPI 1.0
+  version: 1.0.0
+servers:
+  - url: https://rocketeers.ru/api/v1
+tags:
+  - name: registration
+    description: Registation
+paths:
+  /registration:
+    put:
+      tags:
+        - registration
+      summary: Registration
+      description: Add a new registration
+      requestBody:
+        description: Create a new registration in database
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                accessCode:
+                  type: string
+                  description: Секретный ключ, чтобы бек валидировал эти запросы (я предоставлю)
+                status:
+                  type: string
+                  description: Изменение статуса регистрации, достаточно на approved чтобы игрок добавился из бд реги в базу данных игроков
+                  example: approved
+                  enum:
+                    - rejected
+                    - approved
+                    - inreview
+                id:
+                  type: string
+                  description: Registration ID
+                  example: 1
+
+        required: true
+      responses:
+        "200":
+          description: Игрок перемещен из регистрации в базу данных игроков (если approved)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: string
+                    description: В поле data, если все гуд, вернется инфа игрока
+        "403":
+          description: Ключ accessCode отсутствует, либо не верен.
+
+        "422":
+          description: Ошибка (в теле запроса пишет в чем именно ошибка), Вместо message может быть текста - Ошибка валидатора, Такая регистрация существует, Регистрация игрока уже ранее происходило, повторить нельзя!, Либо такой игрок не найден, Плюс ошибка Такой игрок уже пристуствует в базе данных игроков (чтобы второй раз не добавить), Нельзя поменять статус у регистрации
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/ValidateError"
+
+    post:
+      tags:
+        - registration
+      summary: Registration
+      description: Add a new registration
+      requestBody:
+        description: Create a new registration in database
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                accessCode:
+                  type: string
+                  description: Секретный ключ, чтобы бек валидировал эти запросы (я предоставлю)
+                platform:
+                  type: string
+                  description: Статус регистрации
+                  example: steam
+                  enum:
+                    - psn
+                    - xbl
+                    - steam
+                    - epic
+                gameId:
+                  type: string
+                  description: GameId пользователя
+                  example: matadorishe
+                vk_id:
+                  type: string
+                  description: VK id с которой рега пришла
+                  example: 1
+
+        required: true
+      responses:
+        "200":
+          description: Игрок найден и успешно добавлен в бд
+        "403":
+          description: Ключ accessCode отсутствует, либо не верен.
+        "422":
+          description: Ошибка (в теле запроса пишет в чем именно ошибка), Вместо message может быть текста - Ошибка валидатора, Такая регистрация существует, Регистрация игрока уже ранее происходило, повторить нельзя!, Либо такой игрок не найден
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/ValidateError"
+
+  /registration/{id}:
+    get:
+      tags:
+        - registration
+      summary: Finds registration by id
+      parameters:
+        - name: id
+          in: query
+          description: Id of Registration
+          required: true
+          explode: true
+          example: 1
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/Registration"
+        "400":
+          description: Не существует
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/NotExistError"
+        "422":
+          description: Ошибка валидации
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/ValidateError"
+
+  /registrations:
+    get:
+      tags:
+        - registration
+      summary: Finds registration by id
+      parameters:
+        - name: limit
+          in: query
+          description: PageSize (1<=)
+          required: true
+          explode: true
+          example: 1
+          schema:
+            type: integer
+        - name: page
+          in: query
+          example: 1
+          description: Current Page (1<=)
+          required: true
+          explode: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Registration"
+        "400":
+          description: Не существует
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/NotExistError"
+        "422":
+          description: Ошибка валидации
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/ValidateError"
+
+components:
+  schemas:
+    Registration:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 1
+        vk_id:
+          type: string
+          description: VK id с которой рега пришла
+          example: 1
+        gameId:
+          type: string
+          description: GameId пользователя
+          example: matadorishe
+        status:
+          type: string
+          description: Статус регистрации (approved - принят, rejected - отклонен, inreview - на рассмотрении)
+          example: inreview
+          enum:
+            - rejected
+            - approved
+            - inreview
+        platform:
+          type: string
+          description: Статус регистрации
+          example: steam
+          enum:
+            - psn
+            - xbl
+            - steam
+            - epic
+        created_ts:
+          type: string
+          format: date-time
+          example: 2022-09-13 21:22:57
+        updated_ts:
+          type: string
+          format: date-time
+          example: 2022-09-13 21:22:57
+    ValidateError:
+      type: object
+      properties:
+        status:
+          type: integer
+          format: int64
+          example: 422
+        message:
+          type: string
+          format: int64
+          example: Ошибка валидатора
+    NotExistError:
+      type: object
+      properties:
+        status:
+          type: integer
+          format: int64
+          example: 400
+        message:
+          type: string
+          format: int64
+          example: Такой регистрации не существует
