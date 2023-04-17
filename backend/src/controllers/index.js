@@ -1,6 +1,5 @@
 const ConverterService = require("./../services/converters/pdf");
 const MESSAGE = require("../enums/responseMessages");
-const fileGeneratorValidators = require("../validators/fileGenerator");
 const FileFormatsEnum = require("../enums/fileFormats");
 const EXCEL_Service = require("../services/converters/excel");
 const PDF_Service = require("../services/converters/pdf");
@@ -37,15 +36,5 @@ module.exports.generateFile = async (req, res) => {
     });
   } catch (e) {
     return res.status(404).json({ status: 404, message: e.message });
-  }
-};
-
-module.exports.validate = (method) => {
-  switch (method) {
-    case "fileGenerator": {
-      return [...fileGeneratorValidators.type];
-    }
-    default:
-      break;
   }
 };

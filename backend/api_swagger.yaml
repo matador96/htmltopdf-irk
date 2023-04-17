@@ -1,65 +1,14 @@
-openapi: 3.0.3
+openapi: 0.0.1
 info:
-  title: Swagger Rocketeers - OpenAPI 1.0
+  title: Swagger File Generator Tool
   version: 1.0.0
 servers:
-  - url: https://rocketeers.ru/api/v1
+  - url: /api/v1
 tags:
   - name: registration
-    description: Registation
+    description: Registsation
 paths:
   /registration:
-    put:
-      tags:
-        - registration
-      summary: Registration
-      description: Add a new registration
-      requestBody:
-        description: Create a new registration in database
-        content:
-          application/x-www-form-urlencoded:
-            schema:
-              type: object
-              properties:
-                accessCode:
-                  type: string
-                  description: Секретный ключ, чтобы бек валидировал эти запросы (я предоставлю)
-                status:
-                  type: string
-                  description: Изменение статуса регистрации, достаточно на approved чтобы игрок добавился из бд реги в базу данных игроков
-                  example: approved
-                  enum:
-                    - rejected
-                    - approved
-                    - inreview
-                id:
-                  type: string
-                  description: Registration ID
-                  example: 1
-
-        required: true
-      responses:
-        "200":
-          description: Игрок перемещен из регистрации в базу данных игроков (если approved)
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    type: string
-                    description: В поле data, если все гуд, вернется инфа игрока
-        "403":
-          description: Ключ accessCode отсутствует, либо не верен.
-
-        "422":
-          description: Ошибка (в теле запроса пишет в чем именно ошибка), Вместо message может быть текста - Ошибка валидатора, Такая регистрация существует, Регистрация игрока уже ранее происходило, повторить нельзя!, Либо такой игрок не найден, Плюс ошибка Такой игрок уже пристуствует в базе данных игроков (чтобы второй раз не добавить), Нельзя поменять статус у регистрации
-          content:
-            application/json:
-              schema:
-                type: object
-                $ref: "#/components/schemas/ValidateError"
-
     post:
       tags:
         - registration
