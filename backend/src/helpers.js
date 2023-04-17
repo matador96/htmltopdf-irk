@@ -3,6 +3,7 @@ const FileFormatsEnum = require("./enums/fileFormats");
 const fileFormat = {
   [FileFormatsEnum.EXCEL]: "xlsx",
   [FileFormatsEnum.PDF]: "pdf",
+  [FileFormatsEnum.WORD]: "docx",
 };
 
 module.exports = {

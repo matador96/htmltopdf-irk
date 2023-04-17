@@ -71,6 +71,42 @@ paths:
         "404":
           description: Not found
 
+  /generate/word:
+    post:
+      tags:
+        - generate
+      requestBody:
+        description: WORKS LIKE PDF
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                templateName:
+                  type: string
+                  description: template name from dir templates/word/*
+                fileName:
+                  type: string
+                  description: Custom file name, default (file_)
+                property1:
+                  type: string
+                  description: custom property1 name, from hbs file of template
+                property2:
+                  type: string
+                  description: custom property2 name, from hbs file of template
+
+        required: true
+      responses:
+        "200":
+          description: If file exist
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/GeneratedFileUrl"
+        "404":
+          description: Not found
+
   /download/{file}:
     get:
       tags:

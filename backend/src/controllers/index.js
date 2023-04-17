@@ -2,11 +2,13 @@ const ConverterService = require("./../services/converters/pdf");
 const FileFormatsEnum = require("../enums/fileFormats");
 const EXCEL_Service = require("../services/converters/excel");
 const PDF_Service = require("../services/converters/pdf");
+const WORD_Service = require("../services/converters/word");
 const fileManageService = require("./../services/fileManage");
 
 const convertServices = {
   [FileFormatsEnum.EXCEL]: EXCEL_Service,
   [FileFormatsEnum.PDF]: PDF_Service,
+  [FileFormatsEnum.WORD]: WORD_Service,
 };
 
 module.exports.downloadFile = async (req, res) => {

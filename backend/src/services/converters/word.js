@@ -1,4 +1,4 @@
-const puppeteer = require("puppeteer");
+const htmlDocx = require("html-docx-js");
 const hbs = require("handlebars");
 const path = require("path");
 const fs = require("fs").promises; // node v11 <
@@ -10,7 +10,7 @@ module.exports.generateFileAndGetURL = async (params) => {
   try {
     const { fileName, downloadFilePath } = generateFileName(
       params?.fileName,
-      FileFormatsEnum.PDF
+      FileFormatsEnum.WORD
     );
 
     if (!params) {
@@ -24,9 +24,9 @@ module.exports.generateFileAndGetURL = async (params) => {
       throw new Error("Template name is not exist in parameters");
     }
 
-    const pdfBuffer = await convert(templateData, templateName);
+    const wordBuffer = await convert(templateData, templateName);
+    await writeToFile(downloadFilePath, wordBuffer, "binary");
 
-    await writeToFile(downloadFilePath, pdfBuffer, "binary");
     const filePayload = {
       fileName,
       fileUrl: downloadFilePath,
@@ -40,12 +40,12 @@ module.exports.generateFileAndGetURL = async (params) => {
 
 const convert = async (templateData, templateName) => {
   const template = await compileFromHBSTemplate(templateData, templateName);
-  return generateAndGetPDFBufferFromHTML(template);
+  return generateAndGetWORDBufferFromHTML(template);
 };
 
 const compileFromHBSTemplate = async (templateData, templateName) => {
   try {
-    const filePath = path.resolve(`templates/pdf/${templateName}.hbs`);
+    const filePath = path.resolve(`templates/word/${templateName}.hbs`);
 
     try {
       // wtf how
@@ -59,36 +59,11 @@ const compileFromHBSTemplate = async (templateData, templateName) => {
   }
 };
 
-const generateAndGetPDFBufferFromHTML = async (template) => {
+const generateAndGetWORDBufferFromHTML = async (template) => {
   try {
-    const browser = await puppeteer.launch({
-      headless: true,
-      timeout: 15000,
-      args: [
-        "--disable-dev-shm-usage",
-        "--no-sandbox",
-        "--disable-setuid-sandbox",
-      ],
-    });
+    const wordBuffer = htmlDocx.asBlob(template);
 
-    const page = await browser.newPage();
-    await page.setContent(template);
-
-    const pdfBuffer = await page.pdf({
-      format: "A4",
-      scale: 1,
-      // margin: {
-      //   top: '80px',
-      //   right: '70px',
-      //   left: '70px',
-      //   bottom: '50px',
-      // },
-      // scale: 0.8,
-    });
-
-    browser.close();
-
-    return pdfBuffer;
+    return wordBuffer;
   } catch (e) {
     throw new Error(e.message);
   }

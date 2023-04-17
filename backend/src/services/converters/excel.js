@@ -1,5 +1,4 @@
 const XLSX = require("xlsx");
-const hbs = require("handlebars");
 const path = require("path");
 const fs = require("fs").promises; // node v11 <
 const { generateFileName } = require("./../../helpers");
@@ -7,7 +6,6 @@ const FileFormatsEnum = require("../../enums/fileFormats");
 
 module.exports.generateFileAndGetURL = async (params) => {
   try {
-    let fileUrl = "";
     const currentTime = new Date().getTime();
 
     const { fileName, downloadFilePath } = generateFileName(

@@ -14,6 +14,7 @@
 ## Example
 
 - for pdf
+
   ```
     post /api/v1/generate/pdf
         body (x-www-form-urlencoded)
@@ -29,7 +30,27 @@
 
    and now you can download generated file: get /api/v1/doownloads/custom_1681765407065.pdf
   ```
+
+- for word (some as pdf)
+
+  ```
+    post /api/v1/generate/word
+        body (x-www-form-urlencoded)
+            templateName: testReport    // string, from templates/word folder [required]
+            mark: Jaguar    // any, property in hbs file
+            model: F-Type   // any, property in hbs file
+            fileName: 'custom' // any || null, if not exist = file_ (default)
+        result
+            "status": 200,
+            "data":
+                "fileName": "custom_1681765407065.docx", // 1681765407065 unix time, like uuid
+                "fileUrl": "downloads/custom_1681765407065.docx"
+
+   and now you can download generated file: get /api/v1/doownloads/custom_1681765407065.docx
+  ```
+
 - for excel
+
   ```
     post /api/v1/generate/excel
         body (x-www-form-urlencoded)

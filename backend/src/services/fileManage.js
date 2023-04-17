@@ -1,9 +1,9 @@
 const path = require("path");
 const fs = require("fs").promises; // node v11 <
 
-module.exports.writeToFile = async (path, content, type) => {
+module.exports.writeToFile = async (...settings) => {
   try {
-    await fs.writeFile(path, content, type);
+    await fs.writeFile(...settings);
   } catch (e) {
     throw new Error(e.message);
   }
