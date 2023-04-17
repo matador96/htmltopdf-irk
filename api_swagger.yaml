@@ -1,0 +1,103 @@
+openapi: 3.0.3
+info:
+  title: File Generator Api
+  version: 1.0.0
+servers:
+  - url: /api/v1
+tags:
+  - name: generate
+paths:
+  /generate/excel:
+    post:
+      tags:
+        - generate
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                fileName:
+                  type: string
+                  description: Custom file name, default (file_)
+                excelData:
+                  type: string
+                  description: JSON.stringify(array) (example in readme github)
+
+        required: true
+      responses:
+        "200":
+          description: If file exist
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/GeneratedFileUrl"
+        "404":
+          description: Not found
+
+  /generate/pdf:
+    post:
+      tags:
+        - generate
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                templateName:
+                  type: string
+                  description: template name from dir templates/pdf/*
+                fileName:
+                  type: string
+                  description: Custom file name, default (file_)
+                property1:
+                  type: string
+                  description: custom property1 name, from hbs file of template
+                property2:
+                  type: string
+                  description: custom property2 name, from hbs file of template
+
+        required: true
+      responses:
+        "200":
+          description: If file exist
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/GeneratedFileUrl"
+        "404":
+          description: Not found
+
+  /download/{file}:
+    get:
+      tags:
+        - download
+      summary: Download by filename
+      responses:
+        "200":
+          description: If file exist
+        "404":
+          description: Not found
+
+components:
+  schemas:
+    GeneratedFileUrl:
+      type: object
+      properties:
+        status:
+          type: integer
+          format: int64
+          example: 200
+        data:
+          type: object
+          description: file payload
+          properties:
+            fileName:
+              type: string
+              example: file_1681761762376.xlsx
+            fileUrl:
+              type: string
+              example: downloads/file_1681761762376.xlsx

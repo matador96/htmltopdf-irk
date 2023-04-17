@@ -1,10 +1,7 @@
 const express = require("express");
 const config = require("./config.js");
 const bodyParser = require("body-parser");
-const runAllCrons = require("./src/cron/all");
 const XLSX = require("xlsx");
-
-// const { generateAndGetPDFBuffer } = require("./src/services/pdf");
 
 const app = express();
 
@@ -13,11 +10,28 @@ app.use(bodyParser.json());
 
 require("./src/routes")(app);
 
-// (async function () {
-//   await generateAndGetPDFBuffer({ mark: "a", model: "b" }, "testReport");
-// })();
+(function () {
+  const fs = require("fs");
+  const cron = require("node-cron");
+  const path = require("path");
+  const dir = "./downloads";
 
-runAllCrons();
+  if (!fs.existsSync(dir)) {
+    fs.mkdirSync(dir); // initialize download folder
+  }
+
+  // every day clean download folder
+  cron.schedule("* * */1 * *", async function () {
+    fs.readdir(dir, (err, files) => {
+      if (err) console.log(err);
+      for (const file of files) {
+        fs.unlink(path.join(dir, file), (err) => {
+          if (err) console.log(err);
+        });
+      }
+    });
+  });
+})();
 
 const server = app.listen(config.port, () =>
   console.log(`Server on port ${config.port}`)

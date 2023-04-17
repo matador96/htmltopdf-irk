@@ -4,9 +4,8 @@
   "description": "",
   "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node server.js",
-    "start-watch": "nodemon server.js --inspect=0.0.0.0:9229 --unhandled-rejections=strict"
+    "start-watch": "nodemon server.js"
   },
   "author": "",
   "license": "ISC",

@@ -3,6 +3,8 @@ const hbs = require("handlebars");
 const path = require("path");
 const fs = require("fs").promises; // node v11 <
 const { writeToFile } = require("./../fileManage");
+const { generateFileName } = require("./../../helpers");
+const FileFormatsEnum = require("../../enums/fileFormats");
 
 module.exports.generateFileAndGetURL = async (params) => {
   try {
